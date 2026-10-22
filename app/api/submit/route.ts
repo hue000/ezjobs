@@ -103,10 +103,47 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * 获取飞书 access token
+ * 获取飞书 access token（三级策略）
+ * 1. 优先使用配置的 user_access_token
+ * 2. 失效时用 refresh_token 自动刷新（OIDC）
+ * 3. 最后回退 tenant_access_token（应用身份）
  */
 async function getFeishuAccessToken(): Promise<string | null> {
   try {
+    // 第 1 层：直接使用用户个人访问令牌
+    if (process.env.FEISHU_USER_ACCESS_TOKEN) {
+      console.log('Using user access token')
+      return process.env.FEISHU_USER_ACCESS_TOKEN
+    }
+
+    // 第 2 层：用 refresh_token 刷新出新的 user_access_token
+    if (process.env.FEISHU_USER_REFRESH_TOKEN) {
+      console.log('Refreshing user access token via OIDC')
+      const refreshRes = await fetch('https://open.feishu.cn/open-apis/authen/v1/oidc/refresh_access_token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'refresh_token',
+          client_id: process.env.FEISHU_APP_ID,
+          client_secret: process.env.FEISHU_APP_SECRET,
+          refresh_token: process.env.FEISHU_USER_REFRESH_TOKEN,
+        })
+      })
+      if (refreshRes.ok) {
+        const data = await refreshRes.json()
+        const token = data.data?.access_token
+        if (token) {
+          console.log('Refreshed user access token successfully')
+          return token
+        }
+        console.warn('Refresh returned no access_token:', JSON.stringify(data))
+      } else {
+        console.warn('Refresh failed:', await refreshRes.text())
+      }
+    }
+
+    // 第 3 层：回退到应用 tenant_access_token
+    console.log('Falling back to tenant access token')
     const response = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
       method: 'POST',
       headers: {

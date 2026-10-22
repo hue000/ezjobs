@@ -39,3 +39,7 @@ preview.html
 
 # Cache
 .next-home/
+.env*
+
+# Local tool homes
+.vercel-home/
