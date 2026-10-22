@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #1A73E8;
+  --accent: #FF6B35;
+}
+
+body {
+  font-family: 'Hind Siliguri', 'Inter', sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animation */
+@keyframes pulse-cta {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.cta-button {
+  animation: pulse-cta 2s ease-in-out infinite;
+}
+
+.cta-button:hover {
+  animation: none;
+}
