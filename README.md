@@ -69,12 +69,33 @@ GA_TRACKING_ID=GA_XXXXXXXX
 
 ## 待完成
 
-- [ ] 集成飞书 Base API，表单提交写入 Companies 表
+- [x] 集成飞书 Base API，表单提交写入 Companies 表
 - [ ] 添加 Google Analytics / Facebook Pixel 追踪
 - [ ] 创建 OG 分享图片（1200x630）
 - [ ] 添加 WhatsApp 分享按钮
 - [ ] A/B 测试不同文案/颜色
 - [ ] 添加多语言切换（孟加拉语/英语/中文）
+
+## 飞书 CRM 集成
+
+表单提交后，数据会自动写入飞书 Companies 表（`tblAwifxfxgIzlKy`），字段映射：
+
+| 表单字段 | Companies 表字段 | 说明 |
+|---|---|---|
+| companyName | Company Name | 公司名称 |
+| phone | Phone | 手机号（+880 格式） |
+| industry | Industry | 行业（自动映射到飞书选项） |
+| contactName | Notes | 联系人（写入备注） |
+| jobCount | Notes | 预计岗位数（写入备注） |
+| - | Source | 固定为 "Other" |
+| - | Lead Status | 固定为 "New" |
+| - | Call Status | 固定为 "Pending" |
+
+### 配置飞书 API
+
+1. 复制 `.env.example` 为 `.env.local`
+2. 填入飞书应用凭证（从飞书开放平台获取）
+3. 部署到 Vercel 后，在 Settings → Environment Variables 中配置相同的环境变量
 
 ## 页面结构
 
